@@ -4,6 +4,13 @@ import type { Schema } from "@/amplify/data/resource";
 
 import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 
 const client = generateClient<Schema>();
 
@@ -26,16 +33,24 @@ export default function App() {
     });
   }
 
+  function deleteTodo(id: string) {
+    client.models.Todo.delete({ id });
+  }
+
   return (
     <Authenticator>
       {({ signOut, user }) => (
         <main>
           <h1>My todos</h1>
           <h1>{user?.signInDetails?.loginId}'s todos</h1>
-          <button onClick={createTodo}>+ new</button>
+          <Button onClick={createTodo} variant="outline">
+            + new
+          </Button>
           <ul>
             {todos.map((todo) => (
-              <li key={todo.id}>{todo.content}</li>
+              <li onClick={() => deleteTodo(todo.id)} key={todo.id}>
+                {todo.content}
+              </li>
             ))}
           </ul>
           <div>
@@ -45,7 +60,31 @@ export default function App() {
               Review next steps of this tutorial.
             </a>
           </div>
-          <button onClick={signOut}>Sign out</button>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>Is it accessible?</AccordionTrigger>
+              <AccordionContent>
+                Yes. It adheres to the WAI-ARIA design pattern.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>Is it styled?</AccordionTrigger>
+              <AccordionContent>
+                Yes. It comes with default styles that matches the other
+                components&apos; aesthetic.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger>Is it animated?</AccordionTrigger>
+              <AccordionContent>
+                Yes. It&apos;s animated by default, but you can disable it if
+                you prefer.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          <Button onClick={signOut} variant="outline">
+            Sign Out
+          </Button>
         </main>
       )}
     </Authenticator>
